@@ -1,10 +1,9 @@
-module github.com/tcm-demo/users
+module user.io
 
-go 1.12
+go 1.14
 
 require (
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
-	github.com/gorilla/mux v1.7.2
-	github.com/kr/pretty v0.1.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	github.com/gorilla/mux v1.8.0
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )

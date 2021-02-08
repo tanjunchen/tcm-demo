@@ -1,11 +1,8 @@
-# build stage
-FROM golang:1.12.6-alpine3.9 AS build-env
-MAINTAINER zhongfox <zhongfox@gmail.com>
+FROM golang:1.14.15-alpine3.12 AS build-env
 ADD . /src
 RUN cd /src && go build -o goapp
 
-# final stage
-FROM alpine
+FROM alpine:3.12
 WORKDIR /app
 COPY --from=build-env /src/goapp /app/
 ENTRYPOINT ./goapp

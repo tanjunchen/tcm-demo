@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--[if IE 9 ]>
+<html class="ie9"><![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>服务网格</title>
+    <!-- CSS -->
+    <link href="css/app_1.min.css" rel="stylesheet">
+</head>
+
+<body data-p-id="index">
+<header id="header" class="clearfix" data-ma-theme="blue">
+    <ul class="h-inner">
+
+        <li class="hi-logo hidden-xs">
+            <a id="welcome_content_id" href="/index">欢迎访问服务网格演示案例</a>
+        </li>
+
+        <li class="pull-right">
+            <ul class="hi-menu">
+                <li id="user_name_wrapper" class="hide">
+                    <a href="" class="a-prevent"><span style="line-height: 36px;" id="logined_user_name"></span></a>
+                </li>
+                <li id="login_wrapper" class="hide">
+                    <a href="javascript:void(0);" style="line-height: 36px;" data-mesh-action="goto-login">登录</a>
+                </li>
+                <li id="logout_wrapper" class="hide">
+                    <a href="javascript:void(0);" style="line-height: 36px;" data-mesh-action="logout">退出</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <!-- Top Search Content -->
+    <div class="h-search-wrap">
+        <div class="hsw-inner">
+            <i class="hsw-close zmdi zmdi-arrow-left" data-mesh-action="search-close"></i>
+            <input type="text">
+        </div>
+    </div>
+</header>
+
+<section id="main">
+    <section id="content">
+        <div class="container">
+            <div class="card">
+                <div class="card-body card-padding">
+                    <div id="recommend_product_banner"></div>
+                    <h3 class="m-b-15"><span style="color: #FF0000; ">推荐商品</span></h3>
+                    <div class="row" id="recommend_product_list">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="card">
+                <div class="card-body card-padding">
+                    <div id="product_banner"></div>
+                    <h3 class="m-b-15"><span style="color: #FF0000; ">折扣商品</span></h3>
+                    <div class="row" id="product_list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+<script src="js/jquery-2.2.0.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/app.min.js"></script>
+</body>
+</html>

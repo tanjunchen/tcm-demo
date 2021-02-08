@@ -38,8 +38,6 @@ public class StockController {
         for (String id : ids.split(",")) {
             Integer value = mockDbMap.get(Integer.valueOf(id));
             if (value != null) {
-                // BigDecimal multiply = new BigDecimal(value).multiply(new BigDecimal(10));
-                // resultMap.put(Integer.valueOf(id), multiply.toString());
                 resultMap.put(Integer.valueOf(id), value);
             }
         }

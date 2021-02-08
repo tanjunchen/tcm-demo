@@ -1,19 +1,62 @@
 ##  在线商城系统
 
-<img src="http://ww4.sinaimg.cn/large/006tNc79gy1g4dtmtlwdwj30o50vcwjy.jpg" referrerpolicy="no-referrer"/>
+在线电子商城，属于多语言微服务系统，包括 nodejs、golang、ruby、python 和 java，整个系统由大概 11 个微服务项目组成。
 
-这是一个在线电子商城, 属于多语言微服务系统, 包括nodejs, golang, ruby, python和java, 整个系统由大概10个微服务项目组成.
+服务调用拓扑关系：
 
-整个页面分三个区域: 用户信息, 推荐商品, 折扣商品:
+![](images/service.png)
 
-用户访问商城首页时, mall服务会分别访问后端的服务users, recommend和discount, 分别获取用户信息, 推荐商品列表, 和折扣商品列表. 其中users服务又会从mongodb服务读写用户信息, recommend服务会从scores服务中查询商品的综合评分, 同时调用products服务获取商品详情, discount服务也会从products商品服务获取商品详情.
 
-------
+## 基准测试
+
+首先部署所有服务的 v1 版本，创建流量治理策略
+
+* kubectl apply -f deploy/mesh-mall-v1.yaml -n mesh
+
+* kubectl apply -f deploy/mesh-routing.yaml -n mesh
 
 ## 多分支环境场景
 
-<img src="http://ww4.sinaimg.cn/large/006tNc79gy1g4dtn2750sj31cx0u01hd.jpg" referrerpolicy="no-referrer"/>
+- jason 希望验证推荐系统 recommend 新版本 v2, 这个版本在「推荐商品」区域上增加了一个 banner。
+- 与此同时, fox 正打算验证另一个的 feature: 包括对 discount 和 products 的修改, 同时引入了新的收藏服务 favorites. 
+其中 discount v2 在「折扣商品」区域上新增一个 banner, 同时 products 服务会通过调用新的服务 favorites 获取商品的收藏人数, 然后返回给前端页面。
 
-- jason希望验证推荐系统recommend 新版本v2, 这个版本在「推荐商品」区域上增加了一个banner.
-- 与此同时, fox正打算验证另一个的feature: 包括对discount 和 products的修改, 同时引入了新的收藏服务favorites. 其中discount v2在「折扣商品」区域上新增一个banner, 同时products服务会通过调用新的服务favorites获取商品的收藏人数, 然后返回给前端页面.
+
+while true; do curl -H "cookie:user=jason"  http://10.40.30.136:31004/api/mall | jq .recommend.banner ;sleep 1;done;
+
+```
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1110  100  1110    0     0  35806      0 --:--:-- --:--:-- --:--:-- 37000
+true
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1111  100  1111    0     0  46291      0 --:--:-- --:--:-- --:--:-- 46291
+true
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1113  100  1113    0     0  31800      0 --:--:-- --:--:-- --:--:-- 31800
+true
+```
+
+```
+while true; do curl -H "cookie:user=xx"  http://10.40.30.136:31004/api/mall | jq .recommend.banner ;sleep 1;done;
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1062  100  1062    0     0  10114      0 --:--:-- --:--:-- --:--:-- 10018
+false
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1068  100  1068    0     0  20538      0 --:--:-- --:--:-- --:--:-- 20538
+false
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1064  100  1064    0     0  22166      0 --:--:-- --:--:-- --:--:-- 22638
+false
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1063  100  1063    0     0  23108      0 --:--:-- --:--:-- --:--:-- 23108
+false
+```
+
 

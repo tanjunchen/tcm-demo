@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: discount
+    version: v2
+  name: discount-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discount
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: discount
+        env: fox
+        version: v2
+    spec:
+      containers:
+        - image: registry.boms.com:8088/micro-service/discount:v1
+          imagePullPolicy: IfNotPresent
+          name: discount
+          ports:
+            - containerPort: 7000
+              protocol: TCP
+          env:
+            - name: version
+              value: "v2"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: products
+    version: v2
+  name: products-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: products
+        env: fox
+        version: v2
+    spec:
+      containers:
+        - image: registry.boms.com:8088/micro-service/products:v1
+          imagePullPolicy: IfNotPresent
+          name: products
+          ports:
+            - containerPort: 7000
+              protocol: TCP
+          env:
+            - name: favorites
+              value: "true"
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: favorites
+    version: v1
+  name: favorites-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: favorites
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: favorites
+        env: fox
+        version: v1
+    spec:
+      containers:
+        - image: registry.boms.com:8088/micro-service/favorites:v1
+          imagePullPolicy: IfNotPresent
+          name: favorites
+          ports:
+            - containerPort: 7000
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: favorites
+  name: favorites
+spec:
+  ports:
+    - name: http
+      port: 7000
+      protocol: TCP
+  selector:
+    app: favorites
+  type: ClusterIP
+

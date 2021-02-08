@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
+	"github.com/gorilla/mux"
 )
 
 type User struct {
@@ -21,25 +22,43 @@ type User struct {
 }
 
 const (
-	MGODB      = "test"
 	COLLECTION = "users"
 	EGRESSURL  = "http://httpbin.org/anything"
 	IMAGEURL   = "https://cdn1.iconfinder.com/data/icons/DarkGlass_Reworked/128x128/apps/user-3.png"
 )
+
+var (
+	port       string
+	mongoDBURL string
+	mongoDBUSER  string
+)
+
+func init() {
+	port = GetEnvDefault("port", "7000")
+	mongoDBURL = GetEnvDefault("MONGO_DB_URL", "mongodb://mongodb:27017/test")
+	mongoDBUSER = GetEnvDefault("MONGO_DB_USER", "test")
+}
+
+func GetEnvDefault(key, defVal string) string {
+	val, ex := os.LookupEnv(key)
+	if !ex {
+		return defVal
+	}
+	return val
+}
 
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/users", createUser).Methods("POST")
 	router.HandleFunc("/users", findUserByName).Methods("GET")
 	fmt.Println("starting user service on port 7000")
-	http.ListenAndServe(":7000", router)
+	http.ListenAndServe(":"+port, router)
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	//headers := getForwardHeaders(r)
-
 	var user User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -96,13 +115,12 @@ func responseWithJson(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func connect() (*mgo.Session, *mgo.Collection, error) {
-	var url = os.Getenv("MONGO_DB_URL")
-	s, err := mgo.DialWithTimeout(url, 1*time.Second)
+	s, err := mgo.DialWithTimeout(mongoDBURL, 3*time.Second)
 	if err != nil {
 		log.Printf("Create Session: %s\n", err)
 		return nil, nil, err
 	}
-	c := s.DB(MGODB).C(COLLECTION)
+	c := s.DB(mongoDBUSER).C(COLLECTION)
 	return s, c, nil
 }
 

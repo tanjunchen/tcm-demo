@@ -1,6 +1,9 @@
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
 import json
+
+version = "v1" if (os.environ.get("version") is None) else os.environ.get("version")
 
 class Server(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -30,13 +33,14 @@ class Server(BaseHTTPRequestHandler):
             try:
                 id_num = int(id)
             except ValueError:
-                continue # ignore
+                continue  # ignore
             score = get_score(id_num)
             if score != '':
                 scores[id_num] = score
 
         self._set_headers()
         self.wfile.write(json.dumps(scores).encode())
+
 
 def get_score(id):
     mock_DB = {
@@ -58,9 +62,12 @@ def get_score(id):
     }
 
     if id in mock_DB:
-        return mock_DB[id] # v1
-        #return mock_DB[id] * 10 #v2
+        if version == "v1":
+            return mock_DB[id]
+        if version == "v2":
+            return mock_DB[id] * 10
     return ''
+
 
 def run(server_class=HTTPServer, handler_class=Server, port=7000):
     server_address = ('', port)
@@ -68,6 +75,7 @@ def run(server_class=HTTPServer, handler_class=Server, port=7000):
 
     print('Starting scores service on port %d...' % port)
     httpd.serve_forever()
+
 
 if __name__ == "__main__":
     run()

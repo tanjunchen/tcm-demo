@@ -1,17 +1,70 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
 
-# IDE config files
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
 .idea
-.idea/*
-.vscode/*
+*.iws
+*.iml
+*.ipr
 
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+logs
+
+go.sum
+.idea/*
+WebGo
+*.log
+*.log.err
+*/rice-box.go
+
+# Editor-based Rest Client
+.idea/httpRequests
+
+# IntelliJ
+out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Cursive Clojure plugin
+.idea/replstate.xml
+
+# Created by .ignore support plugin (hsz.mobi)
+### Go template
 # Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-*.swp
+
+# 忽视所有以下列名称结尾的文件
+*.err
+*.log.err
 
 # Test binary, build with `go test -c`
 *.test
@@ -19,6 +72,4 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-tmp/*
 
-/go.mod

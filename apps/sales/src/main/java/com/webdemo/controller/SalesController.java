@@ -5,9 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -38,8 +35,6 @@ public class SalesController {
         for (String id : ids.split(",")) {
             Integer value = mockDbMap.get(Integer.valueOf(id));
             if (value != null) {
-                // BigDecimal multiply = new BigDecimal(value).multiply(new BigDecimal(10));
-                // resultMap.put(Integer.valueOf(id), multiply.toString());
                 resultMap.put(Integer.valueOf(id), value);
             }
         }

@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
 
 type Discount struct {
-	Banner   string     `json:"banner,omitempty"`
+	Banner   bool
 	Products []*Product `json:"products"`
 }
 
@@ -23,10 +24,30 @@ type Product struct {
 	Favorites int64   `json:"favorites,omitempty"`
 }
 
+func getEnvDefault(key, defVal string) string {
+	val, ex := os.LookupEnv(key)
+	if !ex {
+		return defVal
+	}
+	return val
+}
+
+func init() {
+	port = getEnvDefault("port", "7000")
+	productsURL = getEnvDefault("productsURL", "http://products:7000")
+	version = getEnvDefault("version", "v1")
+}
+
+var (
+	productsURL string
+	port        string
+	version     string
+)
+
 func main() {
 	http.HandleFunc("/discount", discountController)
-	fmt.Println("staring discount service on port 7000")
-	http.ListenAndServe(":7000", nil)
+	fmt.Println("staring discount service on port " + port)
+	http.ListenAndServe(":"+port, nil)
 }
 
 func discountController(w http.ResponseWriter, r *http.Request) {
@@ -42,8 +63,10 @@ func discountController(w http.ResponseWriter, r *http.Request) {
 	}
 
 	discount := Discount{
-		Banner:   "v2 Banner todo", // v2
 		Products: products,
+	}
+	if version == "v2" {
+		discount.Banner = true
 	}
 
 	js, err := json.Marshal(discount)
@@ -59,9 +82,8 @@ func discountController(w http.ResponseWriter, r *http.Request) {
 
 func getProducts(ids []int64, headers map[string]string) ([]*Product, error) {
 	query := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ids)), ","), "[]")
-	url := fmt.Sprintf("http://products.base.svc.cluster.local:7000/products?ids=%s", query)
-
-	p := []*Product{}
+	url := fmt.Sprintf(productsURL+"/products?ids=%s", query)
+	var p []*Product
 	err := getJson(url, &p, headers)
 	return p, err
 }
@@ -69,16 +91,16 @@ func getProducts(ids []int64, headers map[string]string) ([]*Product, error) {
 var client = &http.Client{Timeout: 10 * time.Second}
 
 func getJson(url string, target interface{}, headers map[string]string) error {
-	reqest, err := http.NewRequest("GET", url, nil)
+	request, err := http.NewRequest("GET", url, nil)
 
 	for k, v := range headers {
-		reqest.Header.Add(k, v)
+		request.Header.Add(k, v)
 	}
 
 	if err != nil {
 		panic(err)
 	}
-	response, err := client.Do(reqest)
+	response, err := client.Do(request)
 
 	if err != nil {
 		return err

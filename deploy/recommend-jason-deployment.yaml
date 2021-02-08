@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: recommend
+    version: v2
+  name: recommend-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommend
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: recommend
+        version: v2
+    spec:
+      containers:
+        - image: registry.boms.com:8088/micro-service/recommend:v1
+          imagePullPolicy: IfNotPresent
+          name: recommend
+          ports:
+            - containerPort: 7000
+              protocol: TCP
+          env:
+            - name: banner
+              value: "true"
